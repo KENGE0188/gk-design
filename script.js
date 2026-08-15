@@ -1,18 +1,21 @@
+/* ================= MENU MOBILE ================= */
+
 const menuBtn = document.querySelector(".menu-btn");
 const nav = document.querySelector(".nav");
 
-/* ================= MENU MOBILE ================= */
-
 if (menuBtn && nav) {
   menuBtn.addEventListener("click", () => {
+
     nav.classList.toggle("open");
 
-    const isOpen = nav.classList.contains("open");
+    const menuIsOpen = nav.classList.contains("open");
 
     menuBtn.setAttribute(
       "aria-label",
-      isOpen ? "Fermer le menu" : "Ouvrir le menu"
+      menuIsOpen ? "Fermer le menu" : "Ouvrir le menu"
     );
+
+    menuBtn.textContent = menuIsOpen ? "✕" : "☰";
   });
 }
 
@@ -30,7 +33,12 @@ navLinks.forEach((link) => {
     }
 
     if (menuBtn) {
-      menuBtn.setAttribute("aria-label", "Ouvrir le menu");
+      menuBtn.textContent = "☰";
+
+      menuBtn.setAttribute(
+        "aria-label",
+        "Ouvrir le menu"
+      );
     }
 
   });
@@ -50,14 +58,18 @@ if (contactForm) {
 
     event.preventDefault();
 
-    const submitButton = contactForm.querySelector(
-      'button[type="submit"]'
-    );
+    const submitButton =
+      contactForm.querySelector('button[type="submit"]');
+
+    if (!submitButton) {
+      return;
+    }
 
     const originalText = submitButton.textContent;
 
     submitButton.disabled = true;
     submitButton.textContent = "Envoi en cours...";
+
 
     if (formStatus) {
       formStatus.textContent = "";
@@ -83,15 +95,19 @@ if (contactForm) {
         contactForm.reset();
 
         if (formStatus) {
+
           formStatus.textContent =
-            "✓ Votre message a bien été envoyé. Merci de contacter GK Design !";
+            "✓ Votre message a bien été envoyé à GK Design.";
+
         }
 
       } else {
 
         if (formStatus) {
+
           formStatus.textContent =
-            "Une erreur est survenue. Veuillez réessayer.";
+            "❌ Une erreur est survenue. Veuillez réessayer.";
+
         }
 
       }
@@ -99,8 +115,10 @@ if (contactForm) {
     } catch (error) {
 
       if (formStatus) {
+
         formStatus.textContent =
-          "Impossible d'envoyer le message pour le moment. Vérifiez votre connexion.";
+          "❌ Impossible d'envoyer le message. Vérifiez votre connexion.";
+
       }
 
     }
@@ -110,5 +128,19 @@ if (contactForm) {
     submitButton.textContent = originalText;
 
   });
+
+}
+
+
+/* ================= ANNÉE AUTOMATIQUE ================= */
+
+const currentYear = new Date().getFullYear();
+
+const footerText = document.querySelector("footer p");
+
+if (footerText) {
+
+  footerText.textContent =
+    `© ${currentYear} GK Design — Tous droits réservés.`;
 
 }
