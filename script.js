@@ -1,54 +1,113 @@
 const menuBtn = document.querySelector(".menu-btn");
 const nav = document.querySelector(".nav");
 
+/* ================= MENU MOBILE ================= */
+
 if (menuBtn && nav) {
   menuBtn.addEventListener("click", () => {
     nav.classList.toggle("open");
-  });
 
-  document.querySelectorAll(".nav a").forEach(link => {
-    link.addEventListener("click", () => {
-      nav.classList.remove("open");
-    });
+    const isOpen = nav.classList.contains("open");
+
+    menuBtn.setAttribute(
+      "aria-label",
+      isOpen ? "Fermer le menu" : "Ouvrir le menu"
+    );
   });
 }
 
 
-// Formulaire de contact
+/* Fermer le menu après avoir cliqué sur un lien */
+
+const navLinks = document.querySelectorAll(".nav a");
+
+navLinks.forEach((link) => {
+
+  link.addEventListener("click", () => {
+
+    if (nav) {
+      nav.classList.remove("open");
+    }
+
+    if (menuBtn) {
+      menuBtn.setAttribute("aria-label", "Ouvrir le menu");
+    }
+
+  });
+
+});
+
+
+/* ================= FORMULAIRE ================= */
+
 const contactForm = document.querySelector("#contactForm");
 const formStatus = document.querySelector("#formStatus");
 
+
 if (contactForm) {
 
-  contactForm.addEventListener("submit", function(event) {
+  contactForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const name = document.querySelector("#name").value.trim();
-    const email = document.querySelector("#email").value.trim();
-    const subject = document.querySelector("#subject").value.trim();
-    const message = document.querySelector("#message").value.trim();
+    const submitButton = contactForm.querySelector(
+      'button[type="submit"]'
+    );
 
-    if (!name || !email || !subject || !message) {
-      formStatus.textContent =
-        "Veuillez remplir tous les champs.";
+    const originalText = submitButton.textContent;
 
-      return;
+    submitButton.disabled = true;
+    submitButton.textContent = "Envoi en cours...";
+
+    if (formStatus) {
+      formStatus.textContent = "";
     }
 
-    const body =
-      `Nom : ${name}\n\n` +
-      `Email : ${email}\n\n` +
-      `Message :\n${message}`;
 
-    const mailto =
-      `mailto:?subject=${encodeURIComponent(subject)}` +
-      `&body=${encodeURIComponent(body)}`;
+    try {
 
-    window.location.href = mailto;
+      const response = await fetch(
+        contactForm.action,
+        {
+          method: "POST",
+          body: new FormData(contactForm),
+          headers: {
+            Accept: "application/json"
+          }
+        }
+      );
 
-    formStatus.textContent =
-      "Votre application e-mail va s'ouvrir.";
+
+      if (response.ok) {
+
+        contactForm.reset();
+
+        if (formStatus) {
+          formStatus.textContent =
+            "✓ Votre message a bien été envoyé. Merci de contacter GK Design !";
+        }
+
+      } else {
+
+        if (formStatus) {
+          formStatus.textContent =
+            "Une erreur est survenue. Veuillez réessayer.";
+        }
+
+      }
+
+    } catch (error) {
+
+      if (formStatus) {
+        formStatus.textContent =
+          "Impossible d'envoyer le message pour le moment. Vérifiez votre connexion.";
+      }
+
+    }
+
+
+    submitButton.disabled = false;
+    submitButton.textContent = originalText;
 
   });
 
